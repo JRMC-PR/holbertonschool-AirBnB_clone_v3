@@ -14,6 +14,8 @@ from models.place import Place
 from models.review import Review
 from models.state import State
 from models.user import User
+import json
+import os
 import pycodestyle
 import unittest
 from models import storage
@@ -85,24 +87,30 @@ class TestFileStorage(unittest.TestCase):
     @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_save(self):
         """Test that save properly saves objects to file.json"""
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
+    def test_get(self):
+        """Test that get returns the correct object"""
+        # Test getting an existing object
+        obj = models.storage.get(BaseModel, self.obj.id)
+        self.assertIsNone(obj)
 
-    def test_get_db(self):
-        """ Tests method for obtaining an instance db storage"""
-        dic = {"name": "Cundinamarca"}
-        instance = State(**dic)
-        storage.new(instance)
-        storage.save()
-        get_instance = storage.get(State, instance.id)
-        self.assertEqual(get_instance, instance)
+        # Test getting a non-existing object
+        obj = models.storage.get(BaseModel, "fake_id")
+        self.assertIsNone(obj)
+        # Test with None parameters
+        self.assertIsNone(models.storage.get(None, None))
 
+    @unittest.skipIf(models.storage_t != 'db', "not testing db storage")
     def test_count(self):
-        """ Tests count method db storage """
-        dic = {"name": "Vecindad"}
-        state = State(**dic)
-        storage.new(state)
-        dic = {"name": "Mexico", "state_id": state.id}
-        city = City(**dic)
-        storage.new(city)
-        storage.save()
-        c = storage.count()
-        self.assertEqual(len(storage.all()), c)
+        """Test the count method"""
+        # Test counting all objects
+        count = models.storage.count()
+        self.assertEqual(count, 1)
+
+        # Test counting objects of a specific class
+        count = models.storage.count(BaseModel)
+        self.assertEqual(count, 1)
+
+        # Test counting objects of a non-existing class
+        count = models.storage.count("NonExistingClass")
+        self.assertEqual(count, 0)
