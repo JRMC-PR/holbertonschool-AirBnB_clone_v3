@@ -90,3 +90,33 @@ def put_state(state_id):
             setattr(state, key, value)
     storage.save()
     return make_response(jsonify(state.to_dict()), 200)
+
+
+@app_views.route('/states', methods=['POST'], strict_slashes=False)
+@swag_from('documentation/state/post_state.yml', methods=['POST'])
+def create_state():
+    """Creates a State"""
+    data = request.get_json()
+    if not data:
+        abort(400, description="Not a JSON")
+    if 'name' not in data:
+        abort(400, description="Missing name")
+    state = State(**data)
+    state.save()
+    return make_response(jsonify(state.to_dict()), 201)
+
+@app_views.route('/states/<state_id>', methods=['PUT'], strict_slashes=False)
+@swag_from('documentation/state/put_state.yml', methods=['PUT'])
+def update_state(state_id):
+    """Updates a State object"""
+    state = storage.get(State, state_id)
+    if not state:
+        abort(404)
+    data = request.get_json()
+    if not data:
+        abort(400, description="Not a JSON")
+    for key, value in data.items():
+        if key not in ['id', 'created_at', 'updated_at']:
+            setattr(state, key, value)
+    state.save()
+    return jsonify(state.to_dict())
