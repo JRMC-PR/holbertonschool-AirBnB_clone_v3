@@ -6,6 +6,7 @@ from models.state import State
 from api.v1.views import app_views
 from flasgger import swag_from
 
+
 @app_views.route('/states/<state_id>/cities', methods=['GET'], strict_slashes=False)
 @swag_from('documentation/city/get_cities.yml', methods=['GET'])
 def get_cities(state_id):
