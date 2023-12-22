@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 from flask import request, abort, jsonify, make_response
 from models import storage
 from models.city import City
