@@ -62,6 +62,7 @@ def delete_review(review_id):
                  strict_slashes=False)
 @swag_from('documentation/reviews/post_reviews.yml', methods=['POST'])
 def post_review(place_id):
+    """ Uploads a Review object """
     place = storage.get(Place, place_id)
     if not place:
         abort(404)
@@ -84,7 +85,7 @@ def post_review(place_id):
 @swag_from('documentation/reviews/put_reviews.yml', methods=['PUT'])
 def put_review(review_id):
     """
-    Updates a Review object
+        Updates a Review object
     """
     review = storage.get(Review, review_id)
     if not review:
